@@ -1,0 +1,25 @@
+matrix:
+  include:
+    - language: rust
+      rust: nightly
+      script:
+        - cargo build --verbose --all
+        - cargo test --verbose --all
+        - cargo build --verbose --all --release
+        - cargo test --verbose --all --release
+
+    - language: node_js
+      node_js:
+        - node
+      before_install:
+        - npm i -g lerna
+      install:
+        - npm run install
+      script:
+        - npm run build
+        - npm run lint
+        - npm run test
+
+notifications:
+  email:
+    on_success: never

@@ -1,0 +1,11 @@
+[Settings]
+ID = "522c4aa1-4624-49f5-97b0-8d91e53b1c67"
+
+[build]
+publish = "packages/browser/dist"
+command = "npm run install && npm run build"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

@@ -1,0 +1,6 @@
+{
+  "packages": [
+    "packages/browser"
+  ],
+  "version": "independent"
+}
