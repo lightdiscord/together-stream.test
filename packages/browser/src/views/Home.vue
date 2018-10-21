@@ -1,18 +1,45 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
+    <div>
+        <h1 class="title">Home</h1>
+
+        <template v-if="!spaceship || !connected">
+            <button class="button is-primary" @click="becomeCaptain()" :disabled="!connected">
+                Become a spaceship captain!
+            </button>
+        </template>
+        <template v-else>
+            <p>You're in the crew of the spaceship <strong>{{ spaceship }}</strong>.</p>
+
+            <a class="button is-primary" @click="leaveCrew">
+                Leave your crew
+            </a>
+        </template>
+    </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+<script>
+import Vue from 'vue';
+import { mapState, createNamespacedHelpers } from 'vuex';
 
-@Component({
-    components: {
-    HelloWorld,
+const { mapState: mapSocketState } = createNamespacedHelpers('socket');
+
+export default Vue.extend({
+    computed: {
+        ...mapState(['spaceship']),
+        ...mapSocketState(['connected']),
     },
-    })
-export default class Home extends Vue {}
+    socket: {
+        message(message) {
+            console.log('new socket message', message);
+        },
+    },
+    methods: {
+        becomeCaptain() {
+            this.$socket.send(JSON.stringify({ type: 'BecomeCaptain' }));
+        },
+        leaveCrew() {
+            this.$socket.send(JSON.stringify({ type: 'LeaveCrew' }));
+        },
+    },
+});
 </script>

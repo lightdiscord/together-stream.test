@@ -1,0 +1,13 @@
+{
+    "name": "stream-together",
+    "type": "docker",
+    "public": true,
+    "files": [
+        "Cargo.lock",
+        "Cargo.toml",
+        "crates"
+    ],
+    "features": {
+      "cloud": "v1"
+    }
+}

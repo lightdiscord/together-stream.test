@@ -9,23 +9,21 @@
         "test": "npm run lint"
     },
     "dependencies": {
+        "bulma": "^0.7.2",
+        "reconnecting-websocket": "^4.1.10",
         "vue": "^2.5.17",
-        "vue-class-component": "^6.0.0",
-        "vue-property-decorator": "^7.0.0",
         "vue-router": "^3.0.1",
-        "vuex": "^3.0.1"
+        "vuex": "^3.0.1",
+        "vuex-persist": "^1.7.2"
     },
     "devDependencies": {
         "@vue/babel-preset-app": "^3.0.5",
         "@vue/cli-plugin-babel": "^3.0.5",
         "@vue/cli-plugin-eslint": "^3.0.5",
-        "@vue/cli-plugin-typescript": "^3.0.5",
         "@vue/cli-service": "^3.0.5",
         "@vue/eslint-config-airbnb": "^3.0.5",
-        "@vue/eslint-config-typescript": "^3.0.5",
         "node-sass": "^4.9.4",
         "sass-loader": "^7.1.0",
-        "typescript": "^3.0.3",
         "vue-template-compiler": "^2.5.17"
     },
     "eslintConfig": {
@@ -35,17 +33,20 @@
         },
         "extends": [
             "plugin:vue/essential",
-            "@vue/airbnb",
-            "@vue/typescript"
+            "@vue/airbnb"
         ],
         "rules": {
             "indent": [
                 "error",
                 4
-            ]
+            ],
+            "import/prefer-default-export": "off",
+            "no-console": "off",
+            "default-case": "off",
+            "no-return-assign": "off"
         },
         "parserOptions": {
-            "parser": "typescript-eslint-parser"
+            "parser": "babel-eslint"
         }
     },
     "postcss": {

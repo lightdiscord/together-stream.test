@@ -5,3 +5,11 @@ authors = ["LightDiscord <root@arnaud.sh>"]
 edition = "2018"
 
 [dependencies]
+ws = "0.7.9"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+
+[dependencies.uuid]
+version = "0.7"
+features = ["serde", "v4"]
