@@ -1,20 +1,14 @@
 use ws::{ self, Message, Sender };
 use serde_json;
 use std::io;
-use serde::{ Deserialize, Serialize };
+use super::{ Incoming, Outcoming, Server };
 
 pub trait Handler<'de> {
-    type Incoming: Deserialize<'de>;
-    type Outcoming: Serialize;
+    fn handle(connection: &mut Server, message: Incoming) -> Result<Outcoming, ws::Error>;
 
-    type Connection: AsSender;
-    type Error: From<ws::Error> + From<io::Error>;
-
-    fn handle(connection: &mut Self::Connection, message: Self::Incoming) -> Result<Self::Outcoming, Self::Error>;
-
-    fn on_message(connection: &mut Self::Connection, message: &'de Message) -> Result<(), Self::Error> {
+    fn on_message(connection: &mut Server, message: &'de Message) -> Result<(), ws::Error> {
         let message = message.as_text();
-        let action: Self::Incoming = serde_json::from_str(message?)
+        let action: Incoming = serde_json::from_str(message?)
             .map_err(io::Error::from)?;
 
         let result = Self::handle(connection, action)?;
