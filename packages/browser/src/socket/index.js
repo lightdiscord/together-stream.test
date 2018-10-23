@@ -1,10 +1,11 @@
 /* eslint-disable no-param-reassign */
 
 import Vue from 'vue';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 import Observer from './observer';
 
-export default {
+export const Socket = {
     install(vue, connection, store) {
         if (!connection) throw new Error("Can't locate connection");
 
@@ -50,3 +51,14 @@ export default {
         });
     },
 };
+
+export const register = (store) => {
+    const url = () => store.state.settings.endpoint;
+    const socket = new ReconnectingWebSocket(url);
+
+    store.watch(state => state.settings.endpoint, () => socket.reconnect());
+
+    Vue.use(Socket, socket, store);
+};
+
+export default Socket;
