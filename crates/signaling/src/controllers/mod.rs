@@ -23,7 +23,7 @@ pub struct Spaceship {
     pub crew: Vec<Sender>,
 }
 
-impl<'de> Handler<'de> for Incoming {
+impl Handler for Incoming {
     fn handle(connection: &mut Server, message: Incoming) -> Result<Outcoming, ws::Error> {
         match message {
 
