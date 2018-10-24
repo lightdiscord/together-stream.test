@@ -5,29 +5,16 @@ import Vuex from 'vuex';
 
 import settings from './settings';
 import socket from './socket';
+import spaceship from './spaceship';
 
 export const Store = () => {
     Vue.use(Vuex);
 
     const store = new Vuex.Store({
-        state: {
-            socketed: false,
-            spaceship: null,
-        },
-        mutations: {
-            socketUpdate(state, status) {
-                state.socketed = status;
-            },
-            crewed(state, spaceship) {
-                state.spaceship = spaceship;
-            },
-        },
-        actions: {
-
-        },
         modules: {
             settings,
             socket,
+            spaceship,
         },
     });
 
