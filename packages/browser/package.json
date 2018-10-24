@@ -43,7 +43,8 @@
             "import/prefer-default-export": "off",
             "no-console": "off",
             "default-case": "off",
-            "no-return-assign": "off"
+            "no-return-assign": "off",
+            "no-shadow": "off"
         },
         "parserOptions": {
             "parser": "babel-eslint"

@@ -1,6 +1,11 @@
+use uuid::Uuid;
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(tag = "type")]
 pub enum Incoming {
     BecomeCaptain,
-    LeaveCrew
+    LeaveCrew,
+    JoinCrew {
+        id: Uuid,
+    },
 }

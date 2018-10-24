@@ -1,42 +1,102 @@
-#[macro_use]
 extern crate serde_derive;
 extern crate serde;
 extern crate serde_json;
 extern crate ws;
 extern crate uuid;
+extern crate messages;
 
-pub mod messages;
-pub mod controllers;
+use ws::util::Token;
+use ws::{ Sender, Handler };
+use std::sync::{ Arc, Mutex };
+use std::collections::HashMap;
+use std::env;
+use uuid::Uuid;
 
-use ws::{ Sender, Handler, Request, Response };
-use self::messages::Incoming;
-use self::controllers::{ Server };
+pub struct Peer {
+    sender: Sender,
 
-impl Handler for Server {
-    fn on_request(&mut self, request: &Request) -> ws::Result<(Response)> {
-        match request.resource() {
-            "/ws" => Response::from_request(request),
-            "/" => Ok(Response::new(200, "OK", b"You should go to /ws".to_vec())),
-            _ => Ok(Response::new(404, "Not Found", b"404 - Not Found".to_vec())),
+    spaceship: Option<Spaceship>,
+
+    state: Arc<Mutex<Shared>>,
+}
+
+#[derive(Debug)]
+struct Shared {
+    peers: HashMap<Token, Sender>,
+    spaceships: HashMap<Uuid, Spaceship>
+}
+
+#[derive(Debug)]
+struct Spaceship {
+    captain: Sender,
+    crew: Vec<Sender>,
+    id: Uuid,
+}
+
+impl Spaceship {
+    fn new(captain: Sender) -> Self {
+        Spaceship {
+            crew: vec![captain.clone()],
+            captain,
+            id: Uuid::new_v4()
         }
-    }
-
-    fn on_message(&mut self, message: ws::Message) -> ws::Result<()> {
-        <Incoming as controllers::Handler>::on_message(self, &message)
     }
 }
 
-fn handle(sender: Sender) -> impl Handler {
-    println!("New connection! id={}", sender.connection_id());
+impl Shared {
+    fn new() -> Self {
+        Shared {
+            peers: HashMap::new(),
+            spaceships: HashMap::new()
+        }
+    }
+}
 
-    Server {
-        sender,
-        spaceship: None
+impl Peer {
+    fn new(sender: Sender, state: Arc<Mutex<Shared>>) -> Self {
+        let token = sender.token();
+
+        state.lock().unwrap().peers.insert(token, sender.clone());
+
+        Peer {
+            sender,
+            spaceship: None,
+            state
+        }
+    }
+
+    pub fn token(&self) -> Token {
+        self.sender.token()
+    }
+}
+
+impl Drop for Peer {
+    fn drop(&mut self) {
+        self.state.lock().unwrap().peers.remove(&self.token());
+    }
+}
+
+impl Handler for Peer {
+    fn on_message(&mut self, message: ws::Message) -> ws::Result<()> {
+        for (key, value) in self.state.lock().unwrap().peers.iter() {
+            value.send(message.clone())?;
+        }
+        self.sender.send(message)
     }
 }
 
 fn main() {
-    println!("Hello, world!");
+    let port = env::var("PORT").unwrap_or("8000".to_string());
+    let address = format!("0.0.0.0:{}", port);
 
-    ws::listen("0.0.0.0:8000", handle).unwrap();
+    let state = Arc::new(Mutex::new(Shared::new()));
+
+    let handler = |sender: Sender| {
+        Peer::new(sender, state.clone())
+    };
+
+    println!("Listening on {}", address);
+
+    let listener = ws::listen(address, handler);
+    let _ = listener.unwrap();
 }

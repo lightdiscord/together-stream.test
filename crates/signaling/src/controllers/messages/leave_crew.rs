@@ -1,4 +1,5 @@
-use super::{ Incoming, Outcoming, Server, Handler };
+use crate::Server;
+use super::{ Incoming, Outcoming, Handler };
 use ws::Error;
 
 pub struct LeaveCrew;

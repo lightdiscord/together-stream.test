@@ -20,7 +20,7 @@ export const Socket = {
 
                 this.$options.socket = new Proxy({}, {
                     set: (target, key, value) => {
-                        bus.$on(key, value);
+                        bus.$on(key, value.bind(this));
                         target[key] = value;
 
                         return true;

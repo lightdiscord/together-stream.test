@@ -1,5 +1,5 @@
-use super::super::messages::{ Incoming, Outcoming };
-use super::super::controllers::{ Server, Spaceship };
+use crate::messages::{ Incoming, Outcoming };
+use crate::{ Server, Spaceship };
 use ws::Error;
 
 pub trait Handler {
@@ -17,5 +17,6 @@ macro_rules! register {
 
 register! {
     become_captain => BecomeCaptain,
-    leave_crew => LeaveCrew
+    leave_crew => LeaveCrew,
+    join_crew => JoinCrew
 }

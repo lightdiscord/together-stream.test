@@ -2,13 +2,21 @@
     <div>
         <h1 class="title">Home</h1>
 
-        <template v-if="!spaceship || !connected">
-            <button class="button is-primary" @click="becomeCaptain()" :disabled="!connected">
+        <template v-if="!id || !connected">
+            <button class="button is-primary" @click="becomeCaptain()"
+                :disabled="!connected"
+                :class="{ 'is-loading': !connected }">
                 Become a spaceship captain!
             </button>
         </template>
         <template v-else>
-            <p>You're in the crew of the spaceship <strong>{{ spaceship }}</strong>.</p>
+            <p>You're in the crew of the spaceship <strong>{{ id }}</strong>.</p>
+
+            <div class="field">
+                <div class="control">
+                    <input type="text" class="input" :value="`http://localhost:8080/#/join/${ id }`">
+                </div>
+            </div>
 
             <a class="button is-primary" @click="leaveCrew">
                 Leave your crew
@@ -19,18 +27,23 @@
 
 <script>
 import Vue from 'vue';
-import { mapState, createNamespacedHelpers } from 'vuex';
+import { createNamespacedHelpers } from 'vuex';
 
-const { mapState: mapSocketState } = createNamespacedHelpers('socket');
+const { mapState } = createNamespacedHelpers('socket');
+const { mapState: mapSpaceshipState } = createNamespacedHelpers('spaceship');
 
 export default Vue.extend({
     computed: {
-        ...mapState(['spaceship']),
-        ...mapSocketState(['connected']),
+        ...mapState(['connected']),
+        ...mapSpaceshipState(['id']),
     },
     socket: {
         message(message) {
-            console.log('new socket message', message);
+            const data = JSON.parse(message.data);
+
+            if (data.type === 'NewCaptain') {
+                this.$router.push({ name: 'spaceship', params: { id: data.id } });
+            }
         },
     },
     methods: {

@@ -9,4 +9,7 @@ pub enum Outcoming {
         id: Uuid,
     },
     LeaveCrew,
+    CrewJoined {
+
+    }
 }

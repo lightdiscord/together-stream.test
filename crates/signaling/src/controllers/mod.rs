@@ -5,22 +5,12 @@ pub use self::traits::*;
 
 use super::messages::{ Incoming, Outcoming };
 use ws::{ self, Sender };
-use uuid::Uuid;
-
-pub struct Server {
-    pub sender: Sender,
-    pub spaceship: Option<Spaceship>,
-}
+use super::Server;
 
 impl AsSender for Server {
     fn sender(&self) -> &Sender {
         &self.sender
     }
-}
-
-pub struct Spaceship {
-    pub id: Uuid,
-    pub crew: Vec<Sender>,
 }
 
 impl Handler for Incoming {
@@ -33,6 +23,11 @@ impl Handler for Incoming {
 
             Incoming::LeaveCrew => {
                 messages::Handler::handle(&messages::LeaveCrew, connection, message)
+            }
+
+            Incoming::JoinCrew { id } => {
+                let action = messages::JoinCrew { id };
+                messages::Handler::handle(&action, connection, message)
             }
 
         }

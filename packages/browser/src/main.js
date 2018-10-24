@@ -9,15 +9,16 @@ import './assets/stylesheet.sass';
 
 Vue.config.productionTip = false;
 
-const router = Router();
 const store = Store();
 Socket.register(store);
 
 const register = (el, component) => new Vue({
     el,
-    router,
+    router: Router,
     store,
     render: h => h(component),
 });
+
+console.log(store);
 
 register('#app', App);
